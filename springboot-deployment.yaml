@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hallbooking-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hallbooking
+  template:
+    metadata:
+      labels:
+        app: hallbooking
+    spec:
+      containers:
+        - name: hallbooking-app
+          image: hallbooking-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql:3306/hall_booking"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "root"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "root"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hallbooking-service
+spec:
+  selector:
+    app: hallbooking
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: NodePort
